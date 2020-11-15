@@ -2,12 +2,20 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Shell;
 
 namespace UrlDownloader
 {
     public partial class UrlDownloader : Form
     {
         private HttpDownloader downloader;
+        private readonly TaskbarItemInfo taskbar = new TaskbarItemInfo();
+        private bool isResume;
+        private string filename;
+        private long filesize;
+        private static string folder;
+        private static string file;
+        private static string outputpath;
         public UrlDownloader()
         {
             InitializeComponent();
@@ -17,31 +25,49 @@ namespace UrlDownloader
         {
             try
             {
-                DialogResult box = MessageBox.Show("Info", "You need to select a folder where to save the file!", MessageBoxButtons.OKCancel);
-                if (DialogResult.OK == box)
+                downloader = new HttpDownloader(file, outputpath);
+                
+                downloader.DownloadCompleted += Downloader_DownloadCompleted;
+                downloader.ProgressChanged += Downloader_ProgressChanged;
+                downloader.DownloadInfoReceived += Downloader_DownloadInfoReceived;
+                if (string.IsNullOrEmpty(UrlBox.Text) && string.IsNullOrEmpty(savingTxtbox.Text))
                 {
-                    folderBrowserDialog.ShowDialog();
-                    string folder = folderBrowserDialog.SelectedPath;
-                    string file = UrlBox.Text;
-
-                    string outputpath = $"{folder}\\{Path.GetFileName(file)}";
-
-                    downloader = new HttpDownloader(file, outputpath);
-                    downloader.DownloadCompleted += Downloader_DownloadCompleted;
-                    downloader.ProgressChanged += Downloader_ProgressChanged;
-                    downloader.Start();
-
+                    MessageBox.Show("Fields can't be empty!", "Error");
+                    UrlBox.Focus();
+                    return;
                 }
                 else
                 {
-
+                    downloader.Start();
+                    if (isResume == false)
+                    {
+                        supportResumeLbl.Text = "No";
+                        PauseBtn.Enabled = false;
+                        ResumeBtn.Enabled = false;
+                    }
+                    else
+                    {
+                        supportResumeLbl.Text = "Yes";
+                        PauseBtn.Enabled = true;
+                        ResumeBtn.Enabled = true;
+                    }
                 }
+
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show("Erorr", $"An erorr appear: {ex.Message}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"An error appear: {ex.Message}", "Erorr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Downloader_DownloadInfoReceived(object sender, EventArgs e)
+        {
+            isResume = downloader.Info.AcceptRange;
+            filename = downloader.Info.ServerFileName;
+            filesize = downloader.Info.Length;
+            filenameLbl.Text = filename;
+            fileSizeLbl.Text = filesize.ToString("0.00") + " MB";
         }
 
         private void Downloader_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -52,13 +78,15 @@ namespace UrlDownloader
             DownloadedLbl.Text = string.Format("{0} MB/s", (downloader.TotalBytesReceived / 1024d / 1024d).ToString("0.00"));
             StatusLbl.Text = "Downloading...";
             DownloadingLbl.Text = "Yes..";
+            taskbar.ProgressState = TaskbarItemProgressState.Normal;
+            taskbar.ProgressValue = e.Progress;
         }
 
         private void Downloader_DownloadCompleted(object sender, EventArgs e)
         {
             Invoke((MethodInvoker)delegate
             {
-                MessageBox.Show("Download", "Downloaded Completed", MessageBoxButtons.OK);
+                MessageBox.Show("Download Done... Reseting label values to normal...", "Downloaded Completed", MessageBoxButtons.OK);
 
                 StatusLbl.Text = "N/A";
                 DownloadedLbl.Text = "N/A";
@@ -66,6 +94,11 @@ namespace UrlDownloader
                 SpeedLbl.Text = "N/A";
                 progressBar.Value = 0;
                 ProgressLbl.Text = "0 %";
+                supportResumeLbl.Text = "N/A";
+                filenameLbl.Text = "N/A";
+                fileSizeLbl.Text = "N/A";
+                taskbar.ProgressState = TaskbarItemProgressState.None;
+                taskbar.ProgressValue = 0;
             });
         }
 
@@ -83,6 +116,26 @@ namespace UrlDownloader
             {
                 downloader.Resume();
             }
+        }
+
+        private void UrlDownloader_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveFolderBtn_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.ShowDialog();
+            folder = folderBrowserDialog.SelectedPath;
+            file = UrlBox.Text;
+            savingTxtbox.Text = folder;
+
+            outputpath = $"{folder}\\{Path.GetFileName(file)}";
+        }
+
+        private void UrlDownloader_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
         }
     }
 }
