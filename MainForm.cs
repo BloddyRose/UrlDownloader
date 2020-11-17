@@ -1,5 +1,7 @@
-﻿using AltoHttp;
+﻿// Thanks Alto For the great library 
+using AltoHttp;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Shell;
@@ -8,6 +10,7 @@ namespace UrlDownloader
 {
     public partial class UrlDownloader : Form
     {
+        // global variabiles
         private HttpDownloader downloader;
         private readonly TaskbarItemInfo taskbar = new TaskbarItemInfo();
         private bool isResume;
@@ -16,6 +19,7 @@ namespace UrlDownloader
         private static string folder;
         private static string file;
         private static string outputpath;
+        // Constructor
         public UrlDownloader()
         {
             InitializeComponent();
@@ -25,6 +29,8 @@ namespace UrlDownloader
         {
             try
             {
+                // Downloading the file 
+                linkToFileFolder.Visible = false;
                 downloader = new HttpDownloader(file, outputpath);
                 
                 downloader.DownloadCompleted += Downloader_DownloadCompleted;
@@ -99,6 +105,7 @@ namespace UrlDownloader
                 fileSizeLbl.Text = "N/A";
                 taskbar.ProgressState = TaskbarItemProgressState.None;
                 taskbar.ProgressValue = 0;
+                linkToFileFolder.Visible = true;
             });
         }
 
@@ -120,7 +127,7 @@ namespace UrlDownloader
 
         private void UrlDownloader_Load(object sender, EventArgs e)
         {
-
+            linkToFileFolder.Visible = false;
         }
 
         private void saveFolderBtn_Click(object sender, EventArgs e)
@@ -136,6 +143,15 @@ namespace UrlDownloader
         private void UrlDownloader_FormClosing(object sender, FormClosingEventArgs e)
         {
             Dispose();
+        }
+
+        private void linkToFileFolder_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(folder))
+            {
+                string argument = "/select, \"" + outputpath + "\"";
+                Process.Start("explorer", argument);
+            }
         }
     }
 }

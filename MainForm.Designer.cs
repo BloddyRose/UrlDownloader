@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UrlDownloader));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.UrlBox = new System.Windows.Forms.TextBox();
@@ -48,6 +49,7 @@
             this.ProgressLbl = new System.Windows.Forms.Label();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.label11 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.supportResumeLbl = new System.Windows.Forms.Label();
             this.fileSizeLbl = new System.Windows.Forms.Label();
@@ -56,7 +58,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.savingTxtbox = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
+            this.linkToFileFolder = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // label1
@@ -248,6 +250,17 @@
             this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTip1.ToolTipTitle = "Helper";
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(8, 43);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(63, 15);
+            this.label11.TabIndex = 25;
+            this.label11.Text = "Saving to: ";
+            this.toolTip1.SetToolTip(this.label11, "Please enter a url that hase and extension at the end ");
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -318,22 +331,23 @@
             this.savingTxtbox.Size = new System.Drawing.Size(615, 20);
             this.savingTxtbox.TabIndex = 24;
             // 
-            // label11
+            // linkToFileFolder
             // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(8, 43);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 15);
-            this.label11.TabIndex = 25;
-            this.label11.Text = "Saving to: ";
-            this.toolTip1.SetToolTip(this.label11, "Please enter a url that hase and extension at the end ");
+            this.linkToFileFolder.AutoSize = true;
+            this.linkToFileFolder.Location = new System.Drawing.Point(499, 136);
+            this.linkToFileFolder.Name = "linkToFileFolder";
+            this.linkToFileFolder.Size = new System.Drawing.Size(135, 13);
+            this.linkToFileFolder.TabIndex = 26;
+            this.linkToFileFolder.TabStop = true;
+            this.linkToFileFolder.Text = "Press here to go to your file";
+            this.linkToFileFolder.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkToFileFolder_LinkClicked);
             // 
             // UrlDownloader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 201);
+            this.Controls.Add(this.linkToFileFolder);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.savingTxtbox);
             this.Controls.Add(this.label8);
@@ -360,6 +374,7 @@
             this.Controls.Add(this.UrlBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "UrlDownloader";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -401,5 +416,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox savingTxtbox;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.LinkLabel linkToFileFolder;
     }
 }
